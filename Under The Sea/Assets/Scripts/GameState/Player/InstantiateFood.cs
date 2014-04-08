@@ -28,9 +28,7 @@ public class InstantiateFood : MonoBehaviour {
         {
             if ((currentCurrency - curCost) >= 0)
             {
-                gameObject.GetComponent<PlayerStats>().Currency -= curCost;
-                SpawnFood(curPrefab);
-                currentCurrency = gameObject.GetComponent<PlayerStats>().Currency;
+                SpawnFood(curPrefab);  
             }
         }
     }
@@ -44,6 +42,8 @@ public class InstantiateFood : MonoBehaviour {
         if (objectPos.x >= minX && objectPos.x <= maxX && objectPos.y >= minY && objectPos.y <= maxY)
         {
             GameObject clone = Instantiate(SpawningFood, new Vector3(objectPos.x, objectPos.y, objectPos.z), Quaternion.identity) as GameObject;
+            gameObject.GetComponent<PlayerStats>().Currency -= curCost;
+            currentCurrency = gameObject.GetComponent<PlayerStats>().Currency;
         }
              
     }
