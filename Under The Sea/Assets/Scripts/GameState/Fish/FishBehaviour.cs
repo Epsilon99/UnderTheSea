@@ -13,7 +13,7 @@ public class FishBehaviour : MonoBehaviour {
     //How fast we can swim
     public float SwimSpeed;
 
-    //Public variables to control time of different phases
+    //Public variables to control time of different phases... This should be calculated later
     public float MaxIdlePhase;
     public float MinIdlePhase;
     public float MaxMovePhase;
@@ -21,11 +21,11 @@ public class FishBehaviour : MonoBehaviour {
     public float MaxBreedPhase;
     public float MinBreedPhase;
 
+    public float OffsetX;
+    public float OffsetY;
+
     //Floats regarding movementrestriction
-    private float maxX = -2.748552f;
-    private float minX = -13.95572f;
-    private float maxY = 10.226f;
-    private float minY = 4.658046f;
+    public float maxX, minX, maxY, minY;
 
     //Timer for phases
     private float phaseClock;
@@ -40,20 +40,26 @@ public class FishBehaviour : MonoBehaviour {
     private bool ShouldWeBreed;
     private bool ShouldWeIdle;
 
+    public bool areWeInAqarium = false;
+
+    private Transform thisTransform;
+
 
     void OnAwake(){
+        thisTransform = transform;
+        //Invoke("OnTriggerEnter", 0.1f);
         ResetPhases();
         PickAPhase();
     }
 
 	// Use this for initialization
 	void Start () {
-	    
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	    if(Time.time < phaseClock){
+	    if(Time.time < phaseClock && areWeInAqarium){
             if(ShouldWeMove == true){
                 Movement();
             }
@@ -96,9 +102,6 @@ public class FishBehaviour : MonoBehaviour {
         if(transform.position.y >= maxY || transform.position.y <= minY)
             randomY = -randomY;
 
-        // make sure the position is inside the borders
-        //transform.position.x = Mathf.Clamp(transform.position.x, minX, maxX);
-        //transform.position.y = Mathf.Clamp(transform.position.y, minY, maxY);
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, minX, maxX), Mathf.Clamp(transform.position.y, minY, maxY));
     }
 
@@ -123,6 +126,28 @@ public class FishBehaviour : MonoBehaviour {
             StartIdlePhase();
         else if (phaseValue > (ChanceForBreedPhase + ChanceForIdlePhase))
             StartMovePhase();
+    }
+
+    void OnTriggerEnter(Collider other) {
+        if (other.tag == "Aquarium" && !areWeInAqarium)
+        {
+            float curOffsetX = (OffsetX + (transform.localScale.x / 2f));
+            float curOffsetY =(OffsetY + (transform.localScale.y / 2f));
+
+            minX = (other.transform.position.x - (other.transform.localScale.x / 2) + curOffsetX);
+            maxX = (other.transform.position.x + (other.transform.localScale.x / 2) - curOffsetX);
+            minY = (other.transform.position.y - (other.transform.localScale.y / 2) + curOffsetY);
+            maxY = (other.transform.position.y + (other.transform.localScale.y / 2) - curOffsetY);
+            areWeInAqarium = true;
+            
+        }
+    }
+
+    void OnTriggerExit(Collider other) {
+        if (other.tag == "Aquarium" && !areWeInAqarium)
+        {
+            areWeInAqarium = false;
+        }
     }
         
         

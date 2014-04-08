@@ -3,44 +3,49 @@ using System.Collections;
 
 public class InstantiateFood : MonoBehaviour {
 
-    public GameObject FoodPrefab;
+    private GameObject curPrefab = null;
+    private int curCost = 0;
+    private int currentCurrency;
+
     public float OffsetX;
     public float OffsetY;
 
     private GameObject activeAquarium;
 
-    private float minX;
-    private float maxX;
-    private float minY;
-    private float maxY;
+    private float minX,maxX,minY,maxY;
 
     // Use this for initialization
     void Start()
     {
         ChangeSpawnCords();
+        currentCurrency = gameObject.GetComponent<PlayerStats>().Currency;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && curPrefab != null)
         {
-            SpawnFood(FoodPrefab);
-            Debug.Log("min X " + minX);
-            Debug.Log("max X " + maxX);
-            Debug.Log("min Y " + minY);
-            Debug.Log("max Y " + maxY);
+            if ((currentCurrency - curCost) >= 0)
+            {
+                gameObject.GetComponent<PlayerStats>().Currency -= curCost;
+                SpawnFood(curPrefab);
+                currentCurrency = gameObject.GetComponent<PlayerStats>().Currency;
+            }
         }
     }
 
     void SpawnFood(GameObject SpawningFood)
     {
-            var mousePos = Input.mousePosition;
-            mousePos.z = 5f;
-            var objectPos = Camera.main.ScreenToWorldPoint(mousePos);
+        var mousePos = Input.mousePosition;
+        mousePos.z = 5f;
+        var objectPos = Camera.main.ScreenToWorldPoint(mousePos);
 
-
-            GameObject clone = Instantiate(SpawningFood, new Vector3(Mathf.Clamp(objectPos.x, minX, maxX), Mathf.Clamp(objectPos.y, minY, maxY), objectPos.z), Quaternion.identity) as GameObject;
+        if (objectPos.x >= minX && objectPos.x <= maxX && objectPos.y >= minY && objectPos.y <= maxY)
+        {
+            GameObject clone = Instantiate(SpawningFood, new Vector3(objectPos.x, objectPos.y, objectPos.z), Quaternion.identity) as GameObject;
+        }
+             
     }
 
     public void ChangeSpawnCords() {
@@ -51,5 +56,15 @@ public class InstantiateFood : MonoBehaviour {
         maxX = (aquaCord.position.x + (aquaCord.localScale.x / 2)) - OffsetX;
         minY = (aquaCord.position.y - (aquaCord.localScale.y / 2)) + OffsetY;
         maxY = (aquaCord.position.y + (aquaCord.localScale.y / 2)) - OffsetY;
+    }
+
+    public void ChangInstantaiblePrefab(GameObject NewPrefab, int CostOfItem) {
+        curPrefab = NewPrefab;
+        curCost = CostOfItem;
+    }
+
+    public void ResetInstantaiblePrefab() {
+        curPrefab = null;
+        curCost = 0;
     }
 }
