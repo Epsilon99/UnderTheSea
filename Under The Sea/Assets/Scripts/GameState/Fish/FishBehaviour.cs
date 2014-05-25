@@ -36,27 +36,21 @@ public class FishBehaviour : MonoBehaviour {
     private float randomX;
     private float randomY;
 
+    public bool areWeInAqarium = false;
+
     //Bools to keep track of phases
     private bool ShouldWeMove;
     private bool ShouldWeBreed;
     private bool ShouldWeIdle;
-
-    public bool areWeInAqarium = false;
 
     private Transform thisTransform;
 
 
     void OnAwake(){
         thisTransform = transform;
-        //Invoke("OnTriggerEnter", 0.1f);
         ResetPhases();
         PickAPhase();
     }
-
-	// Use this for initialization
-	void Start () {
-        
-	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -97,14 +91,20 @@ public class FishBehaviour : MonoBehaviour {
         transform.Translate(new Vector3(randomX, randomY, 0) * SwimSpeed * Time.deltaTime);
 
         // if object reached any border, revert the appropriate direction
-        if(transform.position.x >= maxX || transform.position.x <= minX)
+        if (transform.position.x >= maxX || transform.position.x <= minX)
+        {
             randomX = -randomX;
+        }
+        
 
-        if(transform.position.y >= maxY || transform.position.y <= minY)
-            randomY = -randomY;
+        if (transform.position.y >= maxY || transform.position.y <= minY){
+           randomY = -randomY;
+        }
+        
 
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, minX, maxX), Mathf.Clamp(transform.position.y, minY, maxY));
     }
+
 
     private float RandomizePhasetime(float minValue, float maxValue){
         float returnValue = Random.Range(minValue, maxValue);

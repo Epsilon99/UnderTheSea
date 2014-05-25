@@ -10,13 +10,15 @@ public class QuickShop : MonoBehaviour {
 
     public GameObject PlayerGO;
 
+    public Texture2D StandardCursor;
+    public Texture2D foodCursor;
+
     void OnAwake() {
         
     }
 
 	// Use this for initialization
 	void Start () {
-        PlayerGO = GameObject.FindGameObjectWithTag("Player");
 	}
 	
 	// Update is called once per frame
@@ -37,9 +39,12 @@ public class QuickShop : MonoBehaviour {
             {
                 isFoodOpen = !isFoodOpen;
                 PlayerGO.GetComponent<InstantiateFood>().ResetInstantaiblePrefab();
+                gameObject.GetComponent<CursorScript>().ChangeTheCurrentCursor(StandardCursor);
             }
-            if (GUI.Button(new Rect(110, 10, 100, 50), "Sawdust 5$"))
+            if (GUI.Button(new Rect(110, 10, 100, 50), "Sawdust 5$")){
                 PlayerGO.GetComponent<InstantiateFood>().ChangInstantaiblePrefab(FT1Prefab, FT1Cost);
+                gameObject.GetComponent<CursorScript>().ChangeTheCurrentCursor(foodCursor);
+            }
         }
     }
 }

@@ -11,6 +11,8 @@ public class InstantiateFood : MonoBehaviour {
     public float OffsetY;
 
     private GameObject activeAquarium;
+    private GameObject curAquarium;
+    
 
     private float minX,maxX,minY,maxY;
 
@@ -24,12 +26,18 @@ public class InstantiateFood : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        activeAquarium = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>().ActiveAquarium;
+
         if (Input.GetMouseButtonDown(0) && curPrefab != null)
         {
             if ((currentCurrency - curCost) >= 0)
             {
                 SpawnFood(curPrefab);  
             }
+        }
+
+        if (curAquarium != activeAquarium) {
+            ChangeSpawnCords();
         }
     }
 
@@ -50,6 +58,8 @@ public class InstantiateFood : MonoBehaviour {
 
     public void ChangeSpawnCords() {
         activeAquarium = GameObject.FindGameObjectWithTag("GameHandler").GetComponent<GameHandler>().ActiveAquarium;
+        curAquarium = activeAquarium;
+
         Transform aquaCord = activeAquarium.transform;
 
         minX = (aquaCord.position.x - (aquaCord.localScale.x / 2)) + OffsetX;
