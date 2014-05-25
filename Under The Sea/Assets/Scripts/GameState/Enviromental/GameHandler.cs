@@ -60,7 +60,6 @@ public class GameHandler : MonoBehaviour {
         }
         else {
             if (curListNumber <= (Aquariums.Count - 2)) {
-                Debug.Log(Aquariums.Count);
                 ActiveAquarium = Aquariums[(curListNumber + 1)];
                 curListNumber++;
                 ChangeCameraPosition();
