@@ -52,6 +52,9 @@ public class InstantiateFood : MonoBehaviour {
             GameObject clone = Instantiate(SpawningFood, new Vector3(objectPos.x, objectPos.y, objectPos.z), Quaternion.identity) as GameObject;
             gameObject.GetComponent<PlayerStats>().Currency -= curCost;
             currentCurrency = gameObject.GetComponent<PlayerStats>().Currency;
+            clone.GetComponent<FoodScript>().MyAquarium = curAquarium;
+            curAquarium.GetComponent<AquariumScript>().AddFoodToList(clone);
+            curAquarium.GetComponent<AquariumScript>().AlertFishAboutFood();
         }
              
     }

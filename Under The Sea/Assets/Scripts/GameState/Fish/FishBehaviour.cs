@@ -37,16 +37,19 @@ public class FishBehaviour : MonoBehaviour {
     private float randomY;
 
     public bool areWeInAqarium = false;
+    public bool areWeHungry = true;
 
     //Bools to keep track of phases
+    private bool weAreEating;
     private bool ShouldWeMove;
     private bool ShouldWeBreed;
     private bool ShouldWeIdle;
 
+    private GameObject ourAquarium;
     private Transform thisTransform;
 
 
-    void OnAwake(){
+    void Awake(){
         thisTransform = transform;
         ResetPhases();
         PickAPhase();
@@ -59,9 +62,25 @@ public class FishBehaviour : MonoBehaviour {
                 Movement();
             }
         }
-        else{
+        else if(!weAreEating)
+        {
             ResetPhases();
             PickAPhase();
+        }
+
+        if (weAreEating && areWeInAqarium) {
+            GameObject NearestFood = ourAquarium.GetComponent<AquariumScript>().FindClosestFoodToYou(thisTransform);
+            
+            if (NearestFood == null)
+            {
+                weAreEating = false;
+                ResetPhases();
+                PickAPhase();
+            }
+            else {
+                transform.position = Vector3.Lerp(transform.position, NearestFood.transform.position, SwimSpeed * Time.deltaTime);
+
+            }
         }
 	}
 
@@ -105,6 +124,12 @@ public class FishBehaviour : MonoBehaviour {
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, minX, maxX), Mathf.Clamp(transform.position.y, minY, maxY));
     }
 
+    //Stupid naming, but checks if we're hungry when we find food
+    public void FoodIsServed() {
+        if (areWeHungry) {
+            weAreEating = true;
+        }
+    }
 
     private float RandomizePhasetime(float minValue, float maxValue){
         float returnValue = Random.Range(minValue, maxValue);
@@ -132,6 +157,8 @@ public class FishBehaviour : MonoBehaviour {
     void OnTriggerEnter(Collider other) {
         if (other.tag == "Aquarium" && !areWeInAqarium)
         {
+            ourAquarium = other.gameObject;
+
             float curOffsetX = (OffsetX + (transform.localScale.x / 2f));
             float curOffsetY =(OffsetY + (transform.localScale.y / 2f));
 
@@ -140,6 +167,8 @@ public class FishBehaviour : MonoBehaviour {
             minY = (other.transform.position.y - (other.transform.localScale.y / 2) + curOffsetY);
             maxY = (other.transform.position.y + (other.transform.localScale.y / 2) - curOffsetY);
             areWeInAqarium = true;
+
+            other.gameObject.GetComponent<AquariumScript>().AddFishToList(gameObject);
             
         }
     }
@@ -147,7 +176,9 @@ public class FishBehaviour : MonoBehaviour {
     void OnTriggerExit(Collider other) {
         if (other.tag == "Aquarium" && !areWeInAqarium)
         {
+            ourAquarium = null;
             areWeInAqarium = false;
+            other.gameObject.GetComponent<AquariumScript>().RemoveFishFromList(gameObject);
         }
     }
         

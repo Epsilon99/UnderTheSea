@@ -9,14 +9,15 @@ public class FoodScript : MonoBehaviour
 
     private bool shallISink;
 
+    public GameObject MyAquarium;
     private GameObject Particles;
 
     private Transform thisTransform;
 
     void OnEnable()
     {
-        shallISink = true;
         thisTransform = transform;
+        shallISink = true;
         //SetFoodProps();
     }
 
@@ -30,6 +31,7 @@ public class FoodScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (shallISink == true)
             thisTransform.Translate(Vector3.down * Speed * Time.deltaTime);
     }
@@ -54,6 +56,7 @@ public class FoodScript : MonoBehaviour
     IEnumerator DelayDeath()
     {
         yield return new WaitForSeconds(Lifetime);
+        MyAquarium.GetComponent<AquariumScript>().RemoveFoodToList(gameObject);
         Destroy(gameObject);
     }
 }
