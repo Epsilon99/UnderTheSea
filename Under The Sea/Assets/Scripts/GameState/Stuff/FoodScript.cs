@@ -36,7 +36,6 @@ public class FoodScript : MonoBehaviour
             thisTransform.Translate(Vector3.down * Speed * Time.deltaTime);
     }
 
-
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "FloorTrigger")
@@ -53,10 +52,20 @@ public class FoodScript : MonoBehaviour
 
     }
 
+    
+    void OnCollisionEnter(Collision other)
+    {
+        DestroyOurself();
+    }
+
+    void DestroyOurself() {
+        MyAquarium.GetComponent<AquariumScript>().RemoveFoodToList(gameObject);
+        Destroy(gameObject);
+    }
+
     IEnumerator DelayDeath()
     {
         yield return new WaitForSeconds(Lifetime);
-        MyAquarium.GetComponent<AquariumScript>().RemoveFoodToList(gameObject);
-        Destroy(gameObject);
+        DestroyOurself();
     }
 }

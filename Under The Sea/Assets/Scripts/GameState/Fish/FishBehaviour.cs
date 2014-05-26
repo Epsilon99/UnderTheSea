@@ -154,6 +154,7 @@ public class FishBehaviour : MonoBehaviour {
             StartMovePhase();
     }
 
+    
     void OnTriggerEnter(Collider other) {
         if (other.tag == "Aquarium" && !areWeInAqarium)
         {
@@ -171,6 +172,7 @@ public class FishBehaviour : MonoBehaviour {
             other.gameObject.GetComponent<AquariumScript>().AddFishToList(gameObject);
             
         }
+
     }
 
     void OnTriggerExit(Collider other) {
@@ -181,8 +183,7 @@ public class FishBehaviour : MonoBehaviour {
             other.gameObject.GetComponent<AquariumScript>().RemoveFishFromList(gameObject);
         }
     }
-        
-        
+          
     }
 
 
