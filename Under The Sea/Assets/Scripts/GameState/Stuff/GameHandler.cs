@@ -12,6 +12,8 @@ public class GameHandler : MonoBehaviour {
 
     private int curListNumber = 0;
 
+    public float AquariumMinX, AquariumMaxX, AquariumMinY, AquariumMaxY;
+
     void Awake() {
         thisTransform = transform;
         FetchAllCurrentAquariums();
@@ -46,6 +48,13 @@ public class GameHandler : MonoBehaviour {
 
     void ChangeCameraPosition() {
         Camera.GetComponent<CameraScript>().ChangePosition(ActiveAquarium.transform.position.x, ActiveAquarium.transform.position.y);
+
+        Transform aquaCord = ActiveAquarium.transform;
+
+        AquariumMinX = (aquaCord.position.x - (aquaCord.localScale.x / 2));
+        AquariumMaxX = (aquaCord.position.x + (aquaCord.localScale.x / 2));
+        AquariumMinY = (aquaCord.position.y - (aquaCord.localScale.y / 2));
+        AquariumMaxY = (aquaCord.position.y + (aquaCord.localScale.y / 2));
     }
 
     public void ChangeAqaurium(bool left) {

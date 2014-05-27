@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class AquariumScript : MonoBehaviour {
 
     private List<GameObject> foodInAquarium = new List<GameObject>();
-    private List<GameObject> fishInAquarium = new List<GameObject>();
+    public List<GameObject> fishInAquarium = new List<GameObject>();
 
 	// Use this for initialization
 	void Start () {
