@@ -49,20 +49,6 @@ public class GUIScript : MonoBehaviour
         }
     }
 
-    void OnGUI() {
-        if (GUI.Button(new Rect(10, Screen.height - 125, 100, 50), "LEFT"))
-        {
-            UnselectFish();
-            GameHandlerGO.GetComponent<GameHandler>().ChangeAqaurium(true);
-        }
-
-        if (GUI.Button(new Rect(Screen.width - 110, Screen.height - 125, 100, 50), "RIGHT"))
-        {
-            UnselectFish();
-            GameHandlerGO.GetComponent<GameHandler>().ChangeAqaurium(false);
-        }
-    }
-    
     void changeSelectMenu(bool shouldWeEnable){
         NamePlate.GetComponent<TextMesh>().text = ("Name: " + selectedFish.GetComponent<FishStats>().Name);
         AgePlate.GetComponent<TextMesh>().text = ("Age: " + selectedFish.GetComponent<FishStats>().CurAge.ToString());

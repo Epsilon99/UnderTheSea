@@ -16,6 +16,8 @@ public class CursorScript : MonoBehaviour
 
     private bool areFishSelected = false;
     private bool isFishLifted = false;
+    private bool readyToPlace = false;
+    private bool didWeTakeAction = false;
 
     private float storedZAxis;
     private float minX, maxX, minY, maxY;
@@ -33,7 +35,6 @@ public class CursorScript : MonoBehaviour
         RaycastHit hit;
 
         if (Input.GetMouseButtonDown(0)) {
-            
             Ray ray = MainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 7))
             {
@@ -51,6 +52,28 @@ public class CursorScript : MonoBehaviour
                         selectedFishGO = hit.collider.gameObject;
                     }
                 }
+                else if (hit.collider.tag == "MenuLeftArrow" || hit.collider.tag == "MenuRightArrow")
+                {
+
+                    if (hit.collider.tag == "MenuLeftArrow")
+                    {
+                        Debug.Log("derpLeft");
+                        if (!isFishLifted)
+                            gameObject.GetComponent<GUIScript>().UnselectFish();
+
+                        GameHandlerGO.GetComponent<GameHandler>().ChangeAqaurium(true);
+                        didWeTakeAction = true;
+                    }
+                    else if (hit.collider.tag == "MenuRightArrow")
+                    {
+                        Debug.Log("derpRight");
+                        if (!isFishLifted)
+                            gameObject.GetComponent<GUIScript>().UnselectFish();
+
+                        GameHandlerGO.GetComponent<GameHandler>().ChangeAqaurium(false);
+                        didWeTakeAction = true;
+                    }
+                }
             }
             else if (!isFishLifted) { 
                 gameObject.GetComponent<GUIScript>().UnselectFish();
@@ -58,14 +81,25 @@ public class CursorScript : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(1) && isFishLifted)
-            placeFish(selectedFishGO);
+        
+        if(Input.GetMouseButtonUp(0)){
+            if(isFishLifted && !readyToPlace){
+                readyToPlace = true;
+            }
+        }
+        
+        if (Input.GetMouseButtonDown(0) && readyToPlace){
+            if (!didWeTakeAction)
+                placeFish(selectedFishGO);
+        }
 
         if (isFishLifted) {
             mousePos = Input.mousePosition;
             mousePos = MainCamera.ScreenToWorldPoint(mousePos);
             selectedFishGO.transform.position = new Vector3(mousePos.x, mousePos.y-(selectedFishGO.transform.localScale.x/2), MainCamera.transform.position.z + 1);
         }
+
+        didWeTakeAction = false;
     }
 
     public void ChangeTheCurrentCursor(Texture2D newCursor) {
@@ -93,6 +127,7 @@ public class CursorScript : MonoBehaviour
             isFishLifted = false;
             storedZAxis = 0;
         }
+        readyToPlace = false;
     }
 
     private void FetchAquariumCords() {
