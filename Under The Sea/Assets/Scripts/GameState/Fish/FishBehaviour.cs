@@ -9,18 +9,21 @@ public class FishBehaviour : MonoBehaviour {
     public int ChanceForBreedPhase = 10;
     public int ChanceForIdlePhase = 20;
     public int ChanceForMovePhase = 30;
+    public int MinBabyChance;
+    public int MaxBabyChance;
 
+    public int MyHusbandusBabychance;
 
     //How fast we can swim
     public float SwimSpeed;
 
     //Public variables to control time of different phases... This should be calculated later
-    public float MaxIdlePhase;
-    public float MinIdlePhase;
     public float MaxMovePhase;
     public float MinMovePhase;
-    public float MaxBreedPhase;
-    public float MinBreedPhase;
+    public float MaxMateLookingPhase;
+    public float MinMateLookingPhase;
+
+    private float IdleTimer;
 
     public float OffsetX;
     public float OffsetY;
@@ -35,37 +38,49 @@ public class FishBehaviour : MonoBehaviour {
     private float tChange = 0; //force new direction in the first update
     private float randomX;
     private float randomY;
+    private float preRandX = 0;
 
     public bool areWeInAqarium = false;
     public bool areWeHungry = true;
+    public bool weAreMating = false;
 
     //Bools to keep track of phases
     private bool weAreEating;
     private bool ShouldWeMove;
-    private bool ShouldWeBreed;
+    private bool ShouldWeLookForMate;
     private bool ShouldWeIdle;
+    private bool didWeReset = false;
 
     private GameObject ourAquarium;
+    public GameObject MyHusbandu;
+    public GameObject MyWaifu;
     private Transform thisTransform;
+    public GameObject AnimHandler;
 
 
     void Awake(){
-        thisTransform = transform;
-        ResetPhases();
-        PickAPhase();
+        thisTransform = transform;     
+    }
+
+    void Start() {
+        phaseClock = Time.time + 2;
     }
 	
 	// Update is called once per frame
 	void Update () {
-	    if(Time.time < phaseClock && areWeInAqarium){
+        if(Time.time < phaseClock && areWeInAqarium){
             if(ShouldWeMove == true){
                 Movement();
             }
+           
         }
-        else if(!weAreEating)
+        else if (Time.time >= phaseClock && !didWeReset)
         {
-            ResetPhases();
-            PickAPhase();
+            if(areWeInAqarium && !weAreEating && !weAreMating){
+                didWeReset = true;
+                ResetPhases();
+                PickAPhase();
+            }
         }
 
         if (weAreEating && areWeInAqarium) {
@@ -82,29 +97,104 @@ public class FishBehaviour : MonoBehaviour {
 
             }
         }
+
+        if(weAreMating && areWeInAqarium){
+            if(MyHusbandu != null){
+                if(MyHusbandusBabychance != null){
+                    ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(gameObject);
+
+                    int OurBabyChance = (MyHusbandusBabychance + (Random.Range(MinBabyChance, MaxBabyChance))) / 2;
+                    if (OurBabyChance >= Random.Range(MinBabyChance, MaxBabyChance)) {
+                        Debug.Log("I got pregnant, yay");
+                    }
+
+                    weAreMating = false;
+
+                    MyHusbandu = null;
+                    ResetPhases();
+                    PickAPhase();
+                    
+                }
+            }
+        
+            if (MyWaifu != null){
+                ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(gameObject);
+
+                MyWaifu.GetComponent<FishBehaviour>().MyHusbandusBabychance = Random.Range(MinBabyChance, MaxBabyChance);
+
+                weAreMating = false;
+                MyWaifu = null;
+                ResetPhases();
+                PickAPhase();
+                
+            }
+        }
 	}
 
     void StartIdlePhase() { 
+        int randomIdle = Random.Range(1, 4);
+
+        switch (randomIdle) { 
+            case(1):
+                IdleTimer = AnimHandler.GetComponent<FishAnimation>().RuntimeIdle1;
+                break;
+
+            case(2):
+                IdleTimer = AnimHandler.GetComponent<FishAnimation>().RuntimeIdle2;
+                break;
+
+            case(3):
+                IdleTimer = AnimHandler.GetComponent<FishAnimation>().RuntimeIdle3;
+                break;
+        }
+
+        AnimHandler.GetComponent<FishAnimation>().Idle(randomIdle);
+        phaseClock = Time.time + IdleTimer - 0.4f;
         ShouldWeIdle = true;
-        phaseClock = Time.time + RandomizePhasetime(MinIdlePhase,MaxIdlePhase);
     }
 
-    void StartBreedPhase() { 
-        ShouldWeBreed = true;
-        phaseClock = Time.time + RandomizePhasetime(MinBreedPhase,MaxBreedPhase);
+    public void StartBreedPhase() {
+        ShouldWeLookForMate = true;
+        phaseClock = Time.time + RandomizePhasetime(MinMateLookingPhase,MaxMateLookingPhase);
+        //AnimHandler.GetComponent<FishAnimation>().Idle(1);
+
+        
+        MyHusbandu = ourAquarium.GetComponent<AquariumScript>().FindBreedingMate(gameObject);
+        if (MyHusbandu == null)
+        {
+            ourAquarium.GetComponent<AquariumScript>().AddFishToDating(gameObject);
+        }
+        else
+        {
+            weAreMating = true;
+        }
+        
+
     }
 
     void StartMovePhase() { 
         ShouldWeMove = true;
+        AnimHandler.GetComponent<FishAnimation>().Swimming(true);
         phaseClock = Time.time + RandomizePhasetime(MinMovePhase,MaxMovePhase);
     }
 
     void Movement(){
         if(Time.time >= tChange){
+            preRandX = randomX;         
             randomX = Random.Range(-2.0f,2.0f); // with float parameters, a random float
             randomY = Random.Range(-2.0f,2.0f); //  between -2.0 and 2.0 is returned
+
+            if (preRandX >= 0f && randomX < 0)
+            {
+                StartCoroutine(TurnFish(false,false));
+            }
+            else if (preRandX <= 0f && randomX > 0)
+            {
+                StartCoroutine(TurnFish(true,false));
+            }
+
             // set a random interval between 0.5 and 1.5
-            tChange = Time.time + Random.Range(0.5f,1.5f);
+            tChange = Time.time + Random.Range(4f,6f);
         }
 
         transform.Translate(new Vector3(randomX, randomY, 0) * SwimSpeed * Time.deltaTime);
@@ -112,6 +202,16 @@ public class FishBehaviour : MonoBehaviour {
         // if object reached any border, revert the appropriate direction
         if (transform.position.x >= maxX || transform.position.x <= minX)
         {
+            if (randomX > 0)
+            {
+                StartCoroutine(TurnFish(false,true));
+            }
+            if (randomX < 0)
+            {
+                StartCoroutine(TurnFish(true,true));
+            }
+
+            preRandX = -randomX;
             randomX = -randomX;
         }
         
@@ -131,15 +231,45 @@ public class FishBehaviour : MonoBehaviour {
         }
     }
 
+    public void PlayPickupAnimation() {
+        AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
+        AnimHandler.GetComponent<FishAnimation>().PickedUp(true);
+    }
+
+    private IEnumerator TurnFish(bool left,bool isItTurn)
+    {
+        float runtime = AnimHandler.GetComponent<FishAnimation>().RuntimeTurnL;
+        float preSpeed = SwimSpeed;
+
+        if (left)
+            AnimHandler.GetComponent<FishAnimation>().Turn(true);
+        else
+            AnimHandler.GetComponent<FishAnimation>().Turn(false);
+        phaseClock = phaseClock + runtime;
+
+        if (!isItTurn)
+        {
+            SwimSpeed = 0;
+            yield return new WaitForSeconds(runtime - 0.2f);
+            SwimSpeed = preSpeed;
+        }
+        
+    }
+
     private float RandomizePhasetime(float minValue, float maxValue){
         float returnValue = Random.Range(minValue, maxValue);
         return returnValue;
     }
 
     void ResetPhases(){
-        ShouldWeBreed = false;
+
+        AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(true);
+        if(ShouldWeLookForMate)
+            ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(gameObject);
+        ShouldWeLookForMate = false;
         ShouldWeIdle = false;
         ShouldWeMove = false;
+
     }
 
     void PickAPhase() {
@@ -152,8 +282,12 @@ public class FishBehaviour : MonoBehaviour {
             StartIdlePhase();
         else if (phaseValue > (ChanceForBreedPhase + ChanceForIdlePhase))
             StartMovePhase();
+        didWeReset = false;
     }
 
+    public IEnumerator waitForSeconds(float secondsTowait) {
+        yield return new WaitForSeconds(secondsTowait);
+    }
     
     void OnTriggerEnter(Collider other) {
         if (other.tag == "Aquarium" && !areWeInAqarium)
@@ -170,6 +304,8 @@ public class FishBehaviour : MonoBehaviour {
             areWeInAqarium = true;
 
             other.gameObject.GetComponent<AquariumScript>().AddFishToList(gameObject);
+
+            AnimHandler.GetComponent<FishAnimation>().PickedUp(false);
             
         }
 
@@ -185,5 +321,3 @@ public class FishBehaviour : MonoBehaviour {
     }
           
     }
-
-

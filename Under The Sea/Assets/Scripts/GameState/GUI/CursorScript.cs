@@ -57,7 +57,6 @@ public class CursorScript : MonoBehaviour
 
                     if (hit.collider.tag == "MenuLeftArrow")
                     {
-                        Debug.Log("derpLeft");
                         if (!isFishLifted)
                             gameObject.GetComponent<GUIScript>().UnselectFish();
 
@@ -66,7 +65,6 @@ public class CursorScript : MonoBehaviour
                     }
                     else if (hit.collider.tag == "MenuRightArrow")
                     {
-                        Debug.Log("derpRight");
                         if (!isFishLifted)
                             gameObject.GetComponent<GUIScript>().UnselectFish();
 
@@ -111,6 +109,7 @@ public class CursorScript : MonoBehaviour
         storedZAxis = FishToLift.transform.position.z;
         FishToLift.transform.Rotate(0, 0, -90, Space.World);
         FishToLift.GetComponent<FishBehaviour>().areWeInAqarium = false;
+        FishToLift.GetComponent<FishBehaviour>().PlayPickupAnimation();
         isFishLifted = true;
 
     }
