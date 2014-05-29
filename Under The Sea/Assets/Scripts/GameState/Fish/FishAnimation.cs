@@ -70,11 +70,11 @@ public class FishAnimation : MonoBehaviour {
         
         if (left) {
             anim.SetBool("TurningLeft",true);
-            StartCoroutine(RotateMe(Vector3.up * 180,RuntimeTurnL));
+            StartCoroutine(RotateMe(Vector3.up * (transform.localEulerAngles.y-(-90))*-1,RuntimeTurnL));
         }
         if (!left) {
             anim.SetBool("TurningRight", true);
-            StartCoroutine(RotateMe(Vector3.up * 180, RuntimeTurnR));
+            StartCoroutine(RotateMe(Vector3.up * (transform.localEulerAngles.y-90)*-1, RuntimeTurnR));
         }
     }
 

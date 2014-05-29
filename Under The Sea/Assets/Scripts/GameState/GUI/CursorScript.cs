@@ -42,6 +42,7 @@ public class CursorScript : MonoBehaviour
                 {
                     gameObject.GetComponent<GUIScript>().SelectFish(hit.collider.gameObject);
                     selectedFishGO = hit.collider.gameObject;
+                    selectedFishGO.GetComponent<FishBehaviour>().OurParticle.active = true;
                     areFishSelected = true;
                 }
                 else if (hit.collider.tag == "Fish" && areFishSelected) {
@@ -58,7 +59,10 @@ public class CursorScript : MonoBehaviour
                     if (hit.collider.tag == "MenuLeftArrow")
                     {
                         if (!isFishLifted)
+                        {
                             gameObject.GetComponent<GUIScript>().UnselectFish();
+                            selectedFishGO.GetComponent<FishBehaviour>().OurParticle.active = false;
+                        }
 
                         GameHandlerGO.GetComponent<GameHandler>().ChangeAqaurium(true);
                         didWeTakeAction = true;
@@ -66,15 +70,20 @@ public class CursorScript : MonoBehaviour
                     else if (hit.collider.tag == "MenuRightArrow")
                     {
                         if (!isFishLifted)
+                        {
                             gameObject.GetComponent<GUIScript>().UnselectFish();
+                            selectedFishGO.GetComponent<FishBehaviour>().OurParticle.active = false;
+                        }
 
                         GameHandlerGO.GetComponent<GameHandler>().ChangeAqaurium(false);
                         didWeTakeAction = true;
                     }
                 }
             }
-            else if (!isFishLifted) { 
+            else if (!isFishLifted && areFishSelected)
+            { 
                 gameObject.GetComponent<GUIScript>().UnselectFish();
+                selectedFishGO.GetComponent<FishBehaviour>().OurParticle.active = false;
                 areFishSelected = false;
             }
         }

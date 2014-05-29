@@ -36,9 +36,9 @@ public class FishBehaviour : MonoBehaviour {
 
     //Floats regarding movement
     private float tChange = 0; //force new direction in the first update
-    private float randomX;
+    private float randomX = 0.1f;
     private float randomY;
-    private float preRandX = 0;
+    private float preRandX = 0.1f;
 
     public bool areWeInAqarium = false;
     public bool areWeHungry = true;
@@ -50,12 +50,14 @@ public class FishBehaviour : MonoBehaviour {
     private bool ShouldWeLookForMate;
     private bool ShouldWeIdle;
     private bool didWeReset = false;
+    private bool areWeTurning = false;
 
     private GameObject ourAquarium;
     public GameObject MyHusbandu;
     public GameObject MyWaifu;
     private Transform thisTransform;
     public GameObject AnimHandler;
+    public GameObject OurParticle;
 
 
     void Awake(){
@@ -179,36 +181,37 @@ public class FishBehaviour : MonoBehaviour {
     }
 
     void Movement(){
-        if(Time.time >= tChange){
+        if (Time.time >= tChange && !areWeTurning)
+        {
             preRandX = randomX;         
             randomX = Random.Range(-2.0f,2.0f); // with float parameters, a random float
             randomY = Random.Range(-2.0f,2.0f); //  between -2.0 and 2.0 is returned
 
-            if (preRandX >= 0f && randomX < 0)
-            {
-                StartCoroutine(TurnFish(false,false));
-            }
-            else if (preRandX <= 0f && randomX > 0)
+            if (preRandX > 0f && randomX < 0f)
             {
                 StartCoroutine(TurnFish(true,false));
+            }
+            else if (preRandX < 0f && randomX > 0f)
+            {
+                StartCoroutine(TurnFish(false,false));
             }
 
             // set a random interval between 0.5 and 1.5
             tChange = Time.time + Random.Range(4f,6f);
         }
 
-        transform.Translate(new Vector3(randomX, randomY, 0) * SwimSpeed * Time.deltaTime);
+        transform.Translate(new Vector3(randomX, randomY, 0f) * SwimSpeed * Time.deltaTime);
 
         // if object reached any border, revert the appropriate direction
         if (transform.position.x >= maxX || transform.position.x <= minX)
         {
-            if (randomX > 0)
-            {
-                StartCoroutine(TurnFish(false,true));
-            }
-            if (randomX < 0)
+            if (randomX > 0f)
             {
                 StartCoroutine(TurnFish(true,true));
+            }
+            if (randomX < 0f)
+            {
+                StartCoroutine(TurnFish(false,true));
             }
 
             preRandX = -randomX;
@@ -238,6 +241,7 @@ public class FishBehaviour : MonoBehaviour {
 
     private IEnumerator TurnFish(bool left,bool isItTurn)
     {
+        areWeTurning = true;
         float runtime = AnimHandler.GetComponent<FishAnimation>().RuntimeTurnL;
         float preSpeed = SwimSpeed;
 
@@ -252,7 +256,13 @@ public class FishBehaviour : MonoBehaviour {
             SwimSpeed = 0;
             yield return new WaitForSeconds(runtime - 0.2f);
             SwimSpeed = preSpeed;
+            areWeTurning = false;
         }
+        else {
+            yield return new WaitForSeconds(runtime - 0.2f);
+            areWeTurning = false;
+        }
+
         
     }
 
