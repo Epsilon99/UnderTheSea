@@ -6,6 +6,11 @@ public class GameHandler : MonoBehaviour {
 
     public GameObject ActiveAquarium;
     public GameObject Camera;
+    public GameObject SFXHandler;
+    public AudioClip SoundArrow;
+
+    public GameObject LeftArrow;
+    public GameObject RightArrow;
 
     public List<GameObject> Aquariums = new List<GameObject>();
     private Transform thisTransform;
@@ -62,17 +67,38 @@ public class GameHandler : MonoBehaviour {
         {
             if (curListNumber >= 1)
             {
+                playSound(SoundArrow, false);
                 ActiveAquarium = Aquariums[(curListNumber - 1)];
                 curListNumber--;
                 ChangeCameraPosition();
+                if (curListNumber == 0)
+                    LeftArrow.active = false;
+
+                if (RightArrow.active == false)
+                    RightArrow.active = true;
             }
         }
         else {
             if (curListNumber <= (Aquariums.Count - 2)) {
+                playSound(SoundArrow, false);
                 ActiveAquarium = Aquariums[(curListNumber + 1)];
                 curListNumber++;
                 ChangeCameraPosition();
+
+                if (curListNumber+1 == Aquariums.Count)
+                    RightArrow.active = false;
+
+                if (LeftArrow.active == false)
+                    LeftArrow.active = true;
             }
         }
+    }
+
+    private void playSound(AudioClip audioToPlay, bool loop)
+    {
+        SFXHandler.audio.clip = audioToPlay;
+        if (loop)
+            SFXHandler.audio.loop = true;
+        SFXHandler.audio.Play();
     }
 }

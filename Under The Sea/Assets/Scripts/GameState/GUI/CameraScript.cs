@@ -20,13 +20,14 @@ public class CameraScript : MonoBehaviour {
 
             if (transform.position.x == destination.x && transform.position.y == destination.y)
             {
-                areWeDone = true;
+                areWeDone = true;  
             }
         }
 	}
 
     public void ChangePosition(float Xcord,float Ycord){
         areWeDone = false;
+
         destination = new Vector3(Xcord,Ycord,transform.position.z);
     }
 }

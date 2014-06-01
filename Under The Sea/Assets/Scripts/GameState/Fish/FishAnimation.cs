@@ -38,9 +38,8 @@ public class FishAnimation : MonoBehaviour {
 
     public void Eating(bool start){
         if (start)
-        {
             anim.SetBool("Eating", true);
-        }
+        
         else
             anim.SetBool("Eating", false);
     }
@@ -101,7 +100,7 @@ public class FishAnimation : MonoBehaviour {
 
     IEnumerator RotateMe(Vector3 byAngles, float inTime)
     {
-        MyParrent.GetComponent<BoxCollider>().enabled = false;
+        //MyParrent.GetComponent<BoxCollider>().enabled = false;
         var fromAngle = transform.rotation;
         var toAngle = Quaternion.Euler(transform.eulerAngles + byAngles);
         for (var t = 0f; t < 1; t += Time.deltaTime / inTime)
@@ -110,13 +109,14 @@ public class FishAnimation : MonoBehaviour {
             yield return null;
         }
         ResetAllVariables(true);
-        yield return new WaitForSeconds(0.5f);
-        MyParrent.GetComponent<BoxCollider>().enabled = true;
+        yield return new WaitForSeconds(RuntimeTurnL/3);
+        //MyParrent.GetComponent<BoxCollider>().enabled = true;
     }
 
     public void ResetAllVariables(bool exceptSwimmin) {
-        //Debug.Log("We're resetting!  " + exceptSwimmin);
+
         if(exceptSwimmin){
+            Swimming(true);
             Eating(false);
             Mating(false);
             PickedUp(false);

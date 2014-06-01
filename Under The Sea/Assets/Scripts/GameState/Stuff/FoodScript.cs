@@ -6,6 +6,7 @@ public class FoodScript : MonoBehaviour
     public float Lifetime;
     public float FeeddValue;
     public float Speed;
+    public GameObject myGraphicGO;
 
     private bool shallISink;
 
@@ -16,9 +17,9 @@ public class FoodScript : MonoBehaviour
 
     void OnEnable()
     {
+        myGraphicGO.transform.Rotate(new Vector3(Random.RandomRange(0, 361), Random.RandomRange(0, 361), Random.RandomRange(0, 361)));
         thisTransform = transform;
         shallISink = true;
-        //SetFoodProps();
     }
 
     // Use this for initialization
@@ -55,7 +56,11 @@ public class FoodScript : MonoBehaviour
     
     void OnCollisionEnter(Collision other)
     {
-        DestroyOurself();
+        if (other.collider.tag == "Fish")
+        {
+            other.gameObject.GetComponent<FishBehaviour>().StartEatingNow();
+            DestroyOurself();
+        }
     }
 
     void DestroyOurself() {

@@ -4,13 +4,13 @@ using System.Collections;
 
 public class FishBehaviour : MonoBehaviour {
 
-
     //For calculating different chances for the phases
-    public int ChanceForBreedPhase = 10;
-    public int ChanceForIdlePhase = 20;
-    public int ChanceForMovePhase = 30;
+    public int ChanceForBreedPhase;
+    public int ChanceForIdlePhase;
+    public int ChanceForMovePhase;
     public int MinBabyChance;
     public int MaxBabyChance;
+    public GameObject Babyfish;
 
     public int MyHusbandusBabychance;
 
@@ -22,6 +22,7 @@ public class FishBehaviour : MonoBehaviour {
     public float MinMovePhase;
     public float MaxMateLookingPhase;
     public float MinMateLookingPhase;
+    public float breedCooldown;
 
     private float IdleTimer;
 
@@ -36,13 +37,13 @@ public class FishBehaviour : MonoBehaviour {
 
     //Floats regarding movement
     private float tChange = 0; //force new direction in the first update
-    private float randomX = 0.1f;
+    private float randomX;
     private float randomY;
-    private float preRandX = 0.1f;
 
     public bool areWeInAqarium = false;
     public bool areWeHungry = true;
     public bool weAreMating = false;
+    public bool facingRight = true;
 
     //Bools to keep track of phases
     private bool weAreEating;
@@ -50,15 +51,31 @@ public class FishBehaviour : MonoBehaviour {
     private bool ShouldWeLookForMate;
     private bool ShouldWeIdle;
     private bool didWeReset = false;
-    private bool areWeTurning = false;
+    public bool areWePlayingAnimation = false;
+    private bool areWeHavingSex;
+    private bool canWeBreed = true;
+    private bool areWeABaby = false;
+
 
     private GameObject ourAquarium;
     public GameObject MyHusbandu;
     public GameObject MyWaifu;
     private Transform thisTransform;
     public GameObject AnimHandler;
-    public GameObject OurParticle;
+    public GameObject OurSelectParticle;
+    public GameObject OurPickupParticle;
+    public GameObject GameHandler;
+    public GameObject SFXHandler;
 
+    public AudioClip SoundEating;
+    public AudioClip SoundSplashing;
+    public AudioClip SoundPlace;
+
+    void OnEnable() { 
+        SFXHandler = GameObject.FindGameObjectWithTag("FishSFX");
+        GameHandler = GameObject.FindGameObjectWithTag("GameHandler");
+        gameObject.GetComponent<FishStats>().Name = GameHandler.GetComponent<FishNamerScript>().NameMe();
+    }
 
     void Awake(){
         thisTransform = transform;     
@@ -72,7 +89,7 @@ public class FishBehaviour : MonoBehaviour {
 	void Update () {
         if(Time.time < phaseClock && areWeInAqarium){
             if(ShouldWeMove == true){
-                Movement();
+                RandomMovement();
             }
            
         }
@@ -95,45 +112,93 @@ public class FishBehaviour : MonoBehaviour {
                 PickAPhase();
             }
             else {
-                transform.position = Vector3.Lerp(transform.position, NearestFood.transform.position, SwimSpeed * Time.deltaTime);
+                if (!areWePlayingAnimation)
+                    MoveTowardsObject(NearestFood);
 
             }
         }
 
         if(weAreMating && areWeInAqarium){
-            if(MyHusbandu != null){
+            if (MyHusbandu != null && canWeBreed)
+            {
                 if(MyHusbandusBabychance != null){
                     ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(gameObject);
 
-                    int OurBabyChance = (MyHusbandusBabychance + (Random.Range(MinBabyChance, MaxBabyChance))) / 2;
-                    if (OurBabyChance >= Random.Range(MinBabyChance, MaxBabyChance)) {
-                        Debug.Log("I got pregnant, yay");
+                    if (areWeHavingSex)
+                    {
+                        //play animation when we start breeding
+                        AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
+                        AnimHandler.GetComponent<FishAnimation>().Mating(true);
+                        float animationTime = AnimHandler.GetComponent<FishAnimation>().RuntimeParring;
+
+                        //Make sure we stay in animation, for its duration
+                        StartCoroutine(WaitSecondsThenReset(animationTime*2));
+
+                        //check if we get pregnatnt
+                        int OurBabyChance = (MyHusbandusBabychance + (Random.Range(MinBabyChance, MaxBabyChance))) / 2;
+                        //If so, spawn baby
+                        if (OurBabyChance >= Random.Range(MinBabyChance, MaxBabyChance))
+                        {
+                            GameObject Fish = Instantiate(Babyfish, new Vector3(thisTransform.position.x - thisTransform.localScale.y / 2, thisTransform.position.y, thisTransform.position.z), Quaternion.identity) as GameObject;
+                            Fish.GetComponent<FishBehaviour>().setBabyPhase(2);
+                            Fish.transform.localScale = new Vector3(Fish.transform.localScale.x / 1.2f, Fish.transform.localScale.y / 1.2f, Fish.transform.localScale.z / 1.2f);
+                        }
+
+                        //Reset stuff
+                        StartCoroutine(BreedCooldown(breedCooldown));
+                        MyHusbandusBabychance = 0;
+                        areWeHavingSex = false;
+                        weAreMating = false;
+                        MyHusbandu = null;
                     }
-
-                    weAreMating = false;
-
-                    MyHusbandu = null;
-                    ResetPhases();
-                    PickAPhase();
-                    
+                    else {
+                        float distanceToPartner = Vector2.Distance(thisTransform.position, MyHusbandu.transform.position);
+                        if (distanceToPartner <= (thisTransform.localScale.x))
+                            areWeHavingSex=true;
+                        else
+                            MoveTowardsObject(MyHusbandu);
+                    }    
                 }
+
             }
-        
-            if (MyWaifu != null){
-                ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(gameObject);
 
-                MyWaifu.GetComponent<FishBehaviour>().MyHusbandusBabychance = Random.Range(MinBabyChance, MaxBabyChance);
+            if (MyWaifu != null && canWeBreed)
+            {
+                if(areWeHavingSex){
+                    //We're done looking for partners, remove us from list
+                    ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(gameObject);
 
-                weAreMating = false;
-                MyWaifu = null;
-                ResetPhases();
-                PickAPhase();
-                
+                    //play animation when we start breeding
+                    AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
+                    AnimHandler.GetComponent<FishAnimation>().Mating(true);
+                    float animationTime = AnimHandler.GetComponent<FishAnimation>().RuntimeParring;
+
+                    //Make sure we stay in animation, for its duration
+                    StartCoroutine(WaitSecondsThenReset(animationTime*2));
+                    
+                    //Spread the sperm
+                    MyWaifu.GetComponent<FishBehaviour>().MyHusbandusBabychance = Random.Range(MinBabyChance,MaxBabyChance);
+
+                    //Reset stuff
+                    StartCoroutine(BreedCooldown(breedCooldown));
+                    areWeHavingSex = false;
+                    weAreMating = false;
+                    MyWaifu = null;
+
+
+                } else { 
+                    float distanceToPartner = Vector2.Distance(thisTransform.position,MyWaifu.transform.position);
+                    if (distanceToPartner <= (thisTransform.localScale.x))
+                            areWeHavingSex=true;
+                        else
+                            MoveTowardsObject(MyWaifu);
+                    }
             }
         }
 	}
 
-    void StartIdlePhase() { 
+    void StartIdlePhase() {
+        AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
         int randomIdle = Random.Range(1, 4);
 
         switch (randomIdle) { 
@@ -147,6 +212,7 @@ public class FishBehaviour : MonoBehaviour {
 
             case(3):
                 IdleTimer = AnimHandler.GetComponent<FishAnimation>().RuntimeIdle3;
+                areWePlayingAnimation = true;
                 break;
         }
 
@@ -180,18 +246,17 @@ public class FishBehaviour : MonoBehaviour {
         phaseClock = Time.time + RandomizePhasetime(MinMovePhase,MaxMovePhase);
     }
 
-    void Movement(){
-        if (Time.time >= tChange && !areWeTurning)
+    void RandomMovement(){
+        if (Time.time >= tChange && !areWePlayingAnimation)
         {
-            preRandX = randomX;         
             randomX = Random.Range(-2.0f,2.0f); // with float parameters, a random float
             randomY = Random.Range(-2.0f,2.0f); //  between -2.0 and 2.0 is returned
 
-            if (preRandX > 0f && randomX < 0f)
+            if (facingRight && randomX < 0f)
             {
                 StartCoroutine(TurnFish(true,false));
             }
-            else if (preRandX < 0f && randomX > 0f)
+            else if (!facingRight && randomX > 0f)
             {
                 StartCoroutine(TurnFish(false,false));
             }
@@ -205,17 +270,17 @@ public class FishBehaviour : MonoBehaviour {
         // if object reached any border, revert the appropriate direction
         if (transform.position.x >= maxX || transform.position.x <= minX)
         {
-            if (randomX > 0f)
+            if (facingRight)
             {
+                randomX = -randomX;
                 StartCoroutine(TurnFish(true,true));
             }
-            if (randomX < 0f)
+
+            if (!facingRight)
             {
+                randomX = -randomX;
                 StartCoroutine(TurnFish(false,true));
             }
-
-            preRandX = -randomX;
-            randomX = -randomX;
         }
         
 
@@ -225,6 +290,30 @@ public class FishBehaviour : MonoBehaviour {
         
 
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, minX, maxX), Mathf.Clamp(transform.position.y, minY, maxY));
+    }
+
+    void MoveTowardsObject(GameObject WhatToFollow) {
+        float facingCheck = WhatToFollow.transform.position.x - thisTransform.position.x;
+
+        if (!facingRight && facingCheck > 0f) {
+            if (!areWePlayingAnimation)
+                StartCoroutine(TurnFish(false, true));
+     
+        }
+        if (facingRight && facingCheck < 0f)
+        {
+            if (!areWePlayingAnimation)
+                StartCoroutine(TurnFish(true, true));
+        }
+
+
+        Vector3 dir = WhatToFollow.transform.position - thisTransform.position;
+        dir.z = thisTransform.position.z;
+        dir.Normalize();
+
+        transform.Translate(dir * (SwimSpeed*2) * Time.deltaTime);
+
+        //transform.position = new Vector3(Mathf.Clamp(transform.position.x, minX, maxX), Mathf.Clamp(transform.position.y, minY, maxY));
     }
 
     //Stupid naming, but checks if we're hungry when we find food
@@ -237,11 +326,16 @@ public class FishBehaviour : MonoBehaviour {
     public void PlayPickupAnimation() {
         AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
         AnimHandler.GetComponent<FishAnimation>().PickedUp(true);
+        OurPickupParticle.active = true;
     }
 
-    private IEnumerator TurnFish(bool left,bool isItTurn)
+    public void setBabyPhase(float mintuesIShouldGrow) {
+        StartCoroutine(GrowingUp(mintuesIShouldGrow));
+    }
+
+    private IEnumerator TurnFish(bool left,bool isItFastTurn)
     {
-        areWeTurning = true;
+        areWePlayingAnimation = true;
         float runtime = AnimHandler.GetComponent<FishAnimation>().RuntimeTurnL;
         float preSpeed = SwimSpeed;
 
@@ -251,19 +345,76 @@ public class FishBehaviour : MonoBehaviour {
             AnimHandler.GetComponent<FishAnimation>().Turn(false);
         phaseClock = phaseClock + runtime;
 
-        if (!isItTurn)
+        if (!isItFastTurn)
         {
             SwimSpeed = 0;
-            yield return new WaitForSeconds(runtime - 0.2f);
+            yield return new WaitForSeconds(runtime);
             SwimSpeed = preSpeed;
-            areWeTurning = false;
+            areWePlayingAnimation = false;
         }
         else {
-            yield return new WaitForSeconds(runtime - 0.2f);
-            areWeTurning = false;
+            SwimSpeed = SwimSpeed / 2;
+            yield return new WaitForSeconds(runtime/2);
+            SwimSpeed = preSpeed;
+            areWePlayingAnimation = false;
         }
 
+        facingRight = !facingRight;
+
         
+    }
+
+    private IEnumerator WaitSecondsThenReset(float secondsToWaits) {
+        yield return new WaitForSeconds(secondsToWaits);
+        ResetPhases();
+        PickAPhase();
+    }
+
+    private IEnumerator EatTheFood()
+    {
+        float animationTime = AnimHandler.GetComponent<FishAnimation>().RuntimeEating;
+        float preSpeed = SwimSpeed;
+
+        SwimSpeed = 0;
+        ResetPhases();
+        phaseClock = Time.time + animationTime;
+
+        if (!areWePlayingAnimation)
+        {
+            AnimHandler.GetComponent<FishAnimation>().Eating(true);
+            areWePlayingAnimation = true;
+        }
+        else
+        {
+            AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
+        }
+        playSound(SoundEating, false);
+
+        yield return new WaitForSeconds(animationTime);
+
+        SwimSpeed = preSpeed;
+        areWePlayingAnimation = false;
+    }
+
+    private IEnumerator BreedCooldown(float secondsToWait) {
+        canWeBreed = false;
+        yield return new WaitForSeconds(secondsToWait);
+        canWeBreed = true;
+    }
+
+    private IEnumerator GrowingUp(float minutesToGrow)
+    {
+        weAreMating = false;
+        MyHusbandu = null;
+        MyWaifu = null;
+        areWeABaby = true;
+        yield return new WaitForSeconds(minutesToGrow * 60);
+        areWeABaby = false;
+        thisTransform.localScale = new Vector3(thisTransform.localScale.x * 1.2f, thisTransform.localScale.z * 1.2f, thisTransform.localScale.y * 1.2f);
+    }
+
+    public void StartEatingNow(){
+        StartCoroutine(EatTheFood());
     }
 
     private float RandomizePhasetime(float minValue, float maxValue){
@@ -272,6 +423,9 @@ public class FishBehaviour : MonoBehaviour {
     }
 
     void ResetPhases(){
+        if (areWePlayingAnimation) {
+            areWePlayingAnimation = false;
+        }
 
         AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(true);
         if(ShouldWeLookForMate)
@@ -283,25 +437,49 @@ public class FishBehaviour : MonoBehaviour {
     }
 
     void PickAPhase() {
-        int TotalPhaseAmount = ChanceForBreedPhase + ChanceForIdlePhase + ChanceForMovePhase;
-        int phaseValue = Random.Range(0, TotalPhaseAmount);
+        if (canWeBreed && !areWeABaby)
+        {
+            int TotalPhaseAmount = ChanceForBreedPhase + ChanceForIdlePhase + ChanceForMovePhase;
+            int phaseValue = Random.Range(0, TotalPhaseAmount);
 
-        if (phaseValue > 0 && phaseValue < ChanceForBreedPhase)
-            StartBreedPhase();
-        else if (phaseValue > ChanceForBreedPhase && phaseValue < (ChanceForBreedPhase + ChanceForIdlePhase))
-            StartIdlePhase();
-        else if (phaseValue > (ChanceForBreedPhase + ChanceForIdlePhase))
-            StartMovePhase();
+            if (phaseValue > 0 && phaseValue < ChanceForBreedPhase)
+                StartBreedPhase();
+            else if (phaseValue > ChanceForBreedPhase && phaseValue < (ChanceForBreedPhase + ChanceForIdlePhase))
+                StartIdlePhase();
+            else if (phaseValue > (ChanceForBreedPhase + ChanceForIdlePhase))
+                StartMovePhase();
+        }
+        else if(!canWeBreed || areWeABaby) {
+            int TotalPhaseAmount = ChanceForIdlePhase + ChanceForMovePhase;
+            int phaseValue = Random.Range(0, TotalPhaseAmount);
+
+            if (phaseValue > 0 && phaseValue < ChanceForIdlePhase)
+                StartIdlePhase();
+            else if (phaseValue > ChanceForIdlePhase)
+                StartMovePhase();
+        }
         didWeReset = false;
     }
 
-    public IEnumerator waitForSeconds(float secondsTowait) {
-        yield return new WaitForSeconds(secondsTowait);
+    private void playSound(AudioClip audioToPlay,bool loop){
+        if (ourAquarium == GameHandler.GetComponent<GameHandler>().ActiveAquarium || ourAquarium == null) {
+            SFXHandler.audio.clip = audioToPlay;
+            if (loop)
+                SFXHandler.audio.loop = true;
+            SFXHandler.audio.Play();
+        }
     }
-    
+
+    private void stopCurSound() {
+        SFXHandler.audio.Stop();
+        SFXHandler.audio.clip = null;
+        SFXHandler.audio.loop = false;
+    }
+
     void OnTriggerEnter(Collider other) {
         if (other.tag == "Aquarium" && !areWeInAqarium)
         {
+            stopCurSound();
             ourAquarium = other.gameObject;
 
             float curOffsetX = (OffsetX + (transform.localScale.x / 2f));
@@ -315,8 +493,9 @@ public class FishBehaviour : MonoBehaviour {
 
             other.gameObject.GetComponent<AquariumScript>().AddFishToList(gameObject);
 
-            AnimHandler.GetComponent<FishAnimation>().PickedUp(false);
-            
+            AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(true);
+            playSound(SoundPlace, false);
+            OurPickupParticle.active = false;
         }
 
     }
@@ -324,9 +503,29 @@ public class FishBehaviour : MonoBehaviour {
     void OnTriggerExit(Collider other) {
         if (other.tag == "Aquarium" && !areWeInAqarium)
         {
+            if (MyHusbandu != null) {
+                MyHusbandu.GetComponent<FishBehaviour>().MyWaifu = null;
+                MyHusbandu.GetComponent<FishBehaviour>().weAreMating = false;
+                MyHusbandu.GetComponent<FishBehaviour>().areWeHavingSex = false;
+                ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(MyHusbandu);
+                MyHusbandu = null;
+                areWeHavingSex = false;
+                weAreMating = false;
+            }
+            if (MyWaifu != null) {
+                ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(gameObject);
+                MyWaifu.GetComponent<FishBehaviour>().MyHusbandu = null;
+                MyWaifu.GetComponent<FishBehaviour>().weAreMating = false;
+                MyWaifu.GetComponent<FishBehaviour>().areWeHavingSex = false;
+                MyWaifu = null;
+                areWeHavingSex = false;
+                weAreMating = false;
+            }
+
             ourAquarium = null;
             areWeInAqarium = false;
             other.gameObject.GetComponent<AquariumScript>().RemoveFishFromList(gameObject);
+            playSound(SoundSplashing, true);
         }
     }
           

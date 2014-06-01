@@ -3,8 +3,12 @@ using System.Collections;
 
 public class QuickShop : MonoBehaviour {
 
-    public GameObject FT1Prefab;
-    public int FT1Cost;
+    public GameObject Food1Prefab;
+    public int Food1Cost;
+    public string Food1Name;
+    public GameObject Food2Prefab;
+    public int Food2Cost;
+    public string Food2Name;
 
     private bool isFoodOpen = false;
 
@@ -41,8 +45,13 @@ public class QuickShop : MonoBehaviour {
                 PlayerGO.GetComponent<InstantiateFood>().ResetInstantaiblePrefab();
                 gameObject.GetComponent<CursorScript>().ChangeTheCurrentCursor(StandardCursor);
             }
-            if (GUI.Button(new Rect(110, 10, 100, 50), "Sawdust 5$")){
-                PlayerGO.GetComponent<InstantiateFood>().ChangInstantaiblePrefab(FT1Prefab, FT1Cost);
+            if (GUI.Button(new Rect(110, 10, 120, 50), Food1Name + " " + Food1Cost +"$")){
+                PlayerGO.GetComponent<InstantiateFood>().ChangInstantaiblePrefab(Food1Prefab, Food1Cost);
+                gameObject.GetComponent<CursorScript>().ChangeTheCurrentCursor(foodCursor);
+            }
+            if (GUI.Button(new Rect(230, 10, 120, 50), Food2Name + " " + Food2Cost + "$"))
+            {
+                PlayerGO.GetComponent<InstantiateFood>().ChangInstantaiblePrefab(Food2Prefab, Food2Cost);
                 gameObject.GetComponent<CursorScript>().ChangeTheCurrentCursor(foodCursor);
             }
         }

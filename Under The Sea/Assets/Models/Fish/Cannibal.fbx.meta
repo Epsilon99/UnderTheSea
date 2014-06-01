@@ -1,0 +1,603 @@
+fileFormatVersion: 2
+guid: bf9badbe4f20120409249a9ae74ae20f
+ModelImporter:
+  serializedVersion: 15
+  fileIDToRecycleName:
+    100000: All
+    100002: Body
+    100004: Bottom
+    100006: //RootNode
+    100008: CannibalBones
+    100010: CannibalFIsh
+    100012: Eye_l
+    100014: Eye_r
+    100016: Fin_l
+    100018: Fin_r
+    100020: Head
+    100022: LowerLip
+    100024: Tail
+    100026: TopFin
+    100028: UpperLip
+    400000: All
+    400002: Body
+    400004: Bottom
+    400006: //RootNode
+    400008: CannibalBones
+    400010: CannibalFIsh
+    400012: Eye_l
+    400014: Eye_r
+    400016: Fin_l
+    400018: Fin_r
+    400020: Head
+    400022: LowerLip
+    400024: Tail
+    400026: TopFin
+    400028: UpperLip
+    4300000: CannibalFIsh
+    7400000: Eating
+    7400002: Idle1
+    7400004: Idle2
+    7400006: Parring
+    7400008: PickUp
+    7400010: Swimming
+    7400012: Idle3
+    7400014: TurnLeft
+    7400016: TurnRight
+    9500000: //RootNode
+    13700000: CannibalFIsh
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Eating
+      takeName: Eating
+      firstFrame: -1
+      lastFrame: 109
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle1
+      takeName: Idle1
+      firstFrame: 30
+      lastFrame: 170
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle2
+      takeName: Idle2
+      firstFrame: -1
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Parring
+      takeName: Parring
+      firstFrame: -1
+      lastFrame: 62
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: PickUp
+      takeName: PickUp
+      firstFrame: 10
+      lastFrame: 50
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Swimming
+      takeName: Swimming
+      firstFrame: -1
+      lastFrame: 19
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Idle3
+      takeName: Idle3
+      firstFrame: -1
+      lastFrame: 49
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: TurnLeft
+      takeName: TurnLeft
+      firstFrame: -1
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: TurnRight
+      takeName: TurnRight
+      firstFrame: -1
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CannibalBones
+        weight: 1
+      - path: CannibalBones/All
+        weight: 1
+      - path: CannibalBones/All/Body
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_l
+        weight: 1
+      - path: CannibalBones/All/Body/Fin_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_l
+        weight: 1
+      - path: CannibalBones/All/Body/Head/Eye_r
+        weight: 1
+      - path: CannibalBones/All/Body/Head/LowerLip
+        weight: 1
+      - path: CannibalBones/All/Body/Head/UpperLip
+        weight: 1
+      - path: CannibalBones/All/Body/TopFin
+        weight: 1
+      - path: CannibalBones/All/Bottom
+        weight: 1
+      - path: CannibalBones/All/Bottom/Tail
+        weight: 1
+      - path: CannibalFIsh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .300000012
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  userData: 
