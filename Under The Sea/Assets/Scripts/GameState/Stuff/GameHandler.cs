@@ -12,6 +12,8 @@ public class GameHandler : MonoBehaviour {
     public GameObject LeftArrow;
     public GameObject RightArrow;
 
+    public Vector2 CanvasSize; 
+
     public List<GameObject> Aquariums = new List<GameObject>();
     private Transform thisTransform;
 
@@ -25,6 +27,35 @@ public class GameHandler : MonoBehaviour {
         SortList();
         ActiveAquarium = Aquariums[0];
         ChangeCameraPosition();
+
+        #if UNITY_WEBPLAYER
+        // Execute javascript in iframe to keep the player centred
+        string javaScript = @"
+           window.onresize = function() {
+
+             var unity = UnityObject2.instances[0].getUnity();
+
+             var unityDiv = document.getElementById(""unityPlayerEmbed"");
+
+             var width =  window.innerWidth;
+             var height = window.innerHeight;
+
+             var appWidth = " + CanvasSize.x + @";
+             var appHeight = " + CanvasSize.y + @";
+
+             unity.style.width = appWidth + ""px"";
+             unity.style.height = appHeight + ""px"";
+
+             unityDiv.style.marginLeft = (width - appWidth)/2 + ""px"";
+             unityDiv.style.marginTop = (height - appHeight)/2 + ""px"";
+             unityDiv.style.marginRight = (width - appWidth)/2 + ""px"";
+             unityDiv.style.marginBottom = (height - appHeight)/2 + ""px"";
+
+           }
+           window.onresize(); // force it to resize now";
+        Application.ExternalCall(javaScript);
+
+        #endif
     }
 
 	// Use this for initialization
@@ -37,10 +68,20 @@ public class GameHandler : MonoBehaviour {
 	
 	}
 
-    void FetchAllCurrentAquariums() {
+    public void FetchAllCurrentAquariums() {
+        Aquariums.Clear();
+
         foreach (var Aquaria in GameObject.FindGameObjectsWithTag("Aquarium")) {
             Aquariums.Add(Aquaria);
         }
+
+        if (Aquariums.Count == 2 && RightArrow.active != true)
+            RightArrow.active = true;
+    }
+
+    public GameObject FetchLastAquarium() {
+        int lastEntry = Aquariums.Count-1;
+        return Aquariums[lastEntry];
     }
 
     void SortList() {

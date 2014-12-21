@@ -2,11 +2,15 @@
 using System.Collections;
 
 public class ShopHandler : MonoBehaviour {
+    public AudioClip OpenSound;
+    public AudioClip CloseSound;
+
     public GameObject ShopScreen;
     public GameObject ClosePos;
     public GameObject OpenPos;
     public GameObject ArrowLeft;
     public GameObject ArrowRight;
+    public GameObject SelectPlate;
 
     public float speed;
 
@@ -15,15 +19,18 @@ public class ShopHandler : MonoBehaviour {
     private bool areWeInPosition = true;
     public bool disabledLeftArrow;
     public bool disabledRightArrow;
+    public bool disabledSelectPlate;
 
     private GameObject destinationGO;
-
+    private GameObject GUISFX;
+    private GameObject GUIHandlerGO;
 
 
     // Use this for initialization
     void Start()
     {
-
+        GUISFX = GameObject.FindGameObjectWithTag("GUISFX");
+        GUIHandlerGO = GameObject.FindGameObjectWithTag("GUIHandler");
     }
 
     // Update is called once per frame
@@ -70,19 +77,25 @@ public class ShopHandler : MonoBehaviour {
     public void MoveTheShop() {
         if (!areWeInShop)
         {
-            DisableArrows();
+            DisableObjects();
+            GUISFX.audio.clip = OpenSound;
+            GUIHandlerGO.GetComponent<QuickShop>().AreQuickShopAvavible = false;
+            GUISFX.audio.Play();
             destinationGO = OpenPos;
             areWeInPosition = false;
         }
         else if (areWeInShop)
         {
-            EnableArrows();
+            EnableObjects();
+            GUISFX.audio.clip = CloseSound;
+            GUIHandlerGO.GetComponent<QuickShop>().AreQuickShopAvavible = true;
+            GUISFX.audio.Play();
             destinationGO = ClosePos;
             areWeInPosition = false;
         }
     }
 
-    private void DisableArrows()
+    private void DisableObjects()
     {
         if (ArrowLeft.active == true)
         {
@@ -101,9 +114,19 @@ public class ShopHandler : MonoBehaviour {
         }
         else
             disabledRightArrow = false;
+
+        if (SelectPlate.active == true)
+        {
+            SelectPlate.active = false;
+            disabledSelectPlate = true;
+        }
+        else
+        {
+            disabledLeftArrow = false;
+        }
     }
 
-    private void EnableArrows()
+    private void EnableObjects()
     {
         if (disabledLeftArrow)
         {
@@ -117,5 +140,11 @@ public class ShopHandler : MonoBehaviour {
             disabledRightArrow = false;
         }
 
+        if (disabledSelectPlate) {
+            SelectPlate.active = true;
+            disabledSelectPlate = false;
+        }
+
     }
+
 }

@@ -15,6 +15,7 @@ public class FishBehaviour : MonoBehaviour {
     public int MyHusbandusBabychance;
 
     //How fast we can swim
+    public float curSpeed;
     public float SwimSpeed;
 
     //Public variables to control time of different phases... This should be calculated later
@@ -74,7 +75,6 @@ public class FishBehaviour : MonoBehaviour {
     void OnEnable() { 
         SFXHandler = GameObject.FindGameObjectWithTag("FishSFX");
         GameHandler = GameObject.FindGameObjectWithTag("GameHandler");
-        gameObject.GetComponent<FishStats>().Name = GameHandler.GetComponent<FishNamerScript>().NameMe();
     }
 
     void Awake(){
@@ -87,6 +87,9 @@ public class FishBehaviour : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (!areWePlayingAnimation)
+            curSpeed = SwimSpeed;
+
         if(Time.time < phaseClock && areWeInAqarium){
             if(ShouldWeMove == true){
                 RandomMovement();
@@ -129,7 +132,7 @@ public class FishBehaviour : MonoBehaviour {
                         //play animation when we start breeding
                         AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
                         AnimHandler.GetComponent<FishAnimation>().Mating(true);
-                        float animationTime = AnimHandler.GetComponent<FishAnimation>().RuntimeParring;
+                        float animationTime = AnimHandler.GetComponent<FishAnimation>().CurrentRuntimeParring;
 
                         //Make sure we stay in animation, for its duration
                         StartCoroutine(WaitSecondsThenReset(animationTime*2));
@@ -171,7 +174,7 @@ public class FishBehaviour : MonoBehaviour {
                     //play animation when we start breeding
                     AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
                     AnimHandler.GetComponent<FishAnimation>().Mating(true);
-                    float animationTime = AnimHandler.GetComponent<FishAnimation>().RuntimeParring;
+                    float animationTime = AnimHandler.GetComponent<FishAnimation>().CurrentRuntimeParring;
 
                     //Make sure we stay in animation, for its duration
                     StartCoroutine(WaitSecondsThenReset(animationTime*2));
@@ -198,20 +201,23 @@ public class FishBehaviour : MonoBehaviour {
 	}
 
     void StartIdlePhase() {
+
+        if (!areWePlayingAnimation)
+        {
         AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
         int randomIdle = Random.Range(1, 4);
 
         switch (randomIdle) { 
             case(1):
-                IdleTimer = AnimHandler.GetComponent<FishAnimation>().RuntimeIdle1;
+                IdleTimer = AnimHandler.GetComponent<FishAnimation>().CurrentRuntimeIdle1;
                 break;
 
             case(2):
-                IdleTimer = AnimHandler.GetComponent<FishAnimation>().RuntimeIdle2;
+                IdleTimer = AnimHandler.GetComponent<FishAnimation>().CurrentRuntimeIdle2;
                 break;
 
             case(3):
-                IdleTimer = AnimHandler.GetComponent<FishAnimation>().RuntimeIdle3;
+                IdleTimer = AnimHandler.GetComponent<FishAnimation>().CurrentRuntimeIdle3;
                 areWePlayingAnimation = true;
                 break;
         }
@@ -219,6 +225,7 @@ public class FishBehaviour : MonoBehaviour {
         AnimHandler.GetComponent<FishAnimation>().Idle(randomIdle);
         phaseClock = Time.time + IdleTimer - 0.4f;
         ShouldWeIdle = true;
+        }
     }
 
     public void StartBreedPhase() {
@@ -265,7 +272,7 @@ public class FishBehaviour : MonoBehaviour {
             tChange = Time.time + Random.Range(4f,6f);
         }
 
-        transform.Translate(new Vector3(randomX, randomY, 0f) * SwimSpeed * Time.deltaTime);
+        transform.Translate(new Vector3(randomX, randomY, 0f) * curSpeed * Time.deltaTime);
 
         // if object reached any border, revert the appropriate direction
         if (transform.position.x >= maxX || transform.position.x <= minX)
@@ -293,6 +300,7 @@ public class FishBehaviour : MonoBehaviour {
     }
 
     void MoveTowardsObject(GameObject WhatToFollow) {
+        curSpeed = SwimSpeed;
         float facingCheck = WhatToFollow.transform.position.x - thisTransform.position.x;
 
         if (!facingRight && facingCheck > 0f) {
@@ -311,7 +319,7 @@ public class FishBehaviour : MonoBehaviour {
         dir.z = thisTransform.position.z;
         dir.Normalize();
 
-        transform.Translate(dir * (SwimSpeed*2) * Time.deltaTime);
+        transform.Translate(dir * (curSpeed * 2) * Time.deltaTime);
 
         //transform.position = new Vector3(Mathf.Clamp(transform.position.x, minX, maxX), Mathf.Clamp(transform.position.y, minY, maxY));
     }
@@ -336,8 +344,7 @@ public class FishBehaviour : MonoBehaviour {
     private IEnumerator TurnFish(bool left,bool isItFastTurn)
     {
         areWePlayingAnimation = true;
-        float runtime = AnimHandler.GetComponent<FishAnimation>().RuntimeTurnL;
-        float preSpeed = SwimSpeed;
+        float runtime = AnimHandler.GetComponent<FishAnimation>().CurrentRuntimeTurnL;
 
         if (left)
             AnimHandler.GetComponent<FishAnimation>().Turn(true);
@@ -347,15 +354,15 @@ public class FishBehaviour : MonoBehaviour {
 
         if (!isItFastTurn)
         {
-            SwimSpeed = 0;
+            curSpeed = 0;
             yield return new WaitForSeconds(runtime);
-            SwimSpeed = preSpeed;
+            curSpeed = SwimSpeed;
             areWePlayingAnimation = false;
         }
         else {
-            SwimSpeed = SwimSpeed / 2;
+            curSpeed = SwimSpeed / 2;
             yield return new WaitForSeconds(runtime/2);
-            SwimSpeed = preSpeed;
+            curSpeed = SwimSpeed;
             areWePlayingAnimation = false;
         }
 
@@ -370,29 +377,27 @@ public class FishBehaviour : MonoBehaviour {
         PickAPhase();
     }
 
-    private IEnumerator EatTheFood()
+    private IEnumerator EatTheFood(float FoodValue)
     {
-        float animationTime = AnimHandler.GetComponent<FishAnimation>().RuntimeEating;
-        float preSpeed = SwimSpeed;
+        gameObject.GetComponent<FishStats>().ChangeCurrentStomach(FoodValue);
 
-        SwimSpeed = 0;
+        AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
+        yield return new WaitForSeconds(0.2f);
+        float animationTime = AnimHandler.GetComponent<FishAnimation>().CurrentRuntimeEating;
+
+        curSpeed = 0;
         ResetPhases();
-        phaseClock = Time.time + animationTime;
+        phaseClock = Time.time + (animationTime);
 
-        if (!areWePlayingAnimation)
-        {
-            AnimHandler.GetComponent<FishAnimation>().Eating(true);
-            areWePlayingAnimation = true;
-        }
-        else
-        {
-            AnimHandler.GetComponent<FishAnimation>().ResetAllVariables(false);
-        }
+
+        AnimHandler.GetComponent<FishAnimation>().Eating(true);
+        areWePlayingAnimation = true;
+        
         playSound(SoundEating, false);
 
         yield return new WaitForSeconds(animationTime);
 
-        SwimSpeed = preSpeed;
+        curSpeed = SwimSpeed;
         areWePlayingAnimation = false;
     }
 
@@ -413,8 +418,8 @@ public class FishBehaviour : MonoBehaviour {
         thisTransform.localScale = new Vector3(thisTransform.localScale.x * 1.2f, thisTransform.localScale.z * 1.2f, thisTransform.localScale.y * 1.2f);
     }
 
-    public void StartEatingNow(){
-        StartCoroutine(EatTheFood());
+    public void StartEatingNow(float FoodValue){
+        StartCoroutine(EatTheFood(FoodValue));
     }
 
     private float RandomizePhasetime(float minValue, float maxValue){
@@ -528,5 +533,40 @@ public class FishBehaviour : MonoBehaviour {
             playSound(SoundSplashing, true);
         }
     }
-          
+
+    void onDisable() {
+
+    }
+
+    void OnDestroy() {
+        if (ourAquarium != null)
+            ourAquarium.GetComponent<AquariumScript>().RemoveFishFromList(gameObject);
+
+        if (MyHusbandu != null)
+        {
+            MyHusbandu.GetComponent<FishBehaviour>().MyWaifu = null;
+            MyHusbandu.GetComponent<FishBehaviour>().weAreMating = false;
+            MyHusbandu.GetComponent<FishBehaviour>().areWeHavingSex = false;
+            ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(MyHusbandu);
+            MyHusbandu = null;
+            areWeHavingSex = false;
+            weAreMating = false;
+        }
+        if (MyWaifu != null)
+        {
+            ourAquarium.GetComponent<AquariumScript>().RemoveFishFromDating(gameObject);
+            MyWaifu.GetComponent<FishBehaviour>().MyHusbandu = null;
+            MyWaifu.GetComponent<FishBehaviour>().weAreMating = false;
+            MyWaifu.GetComponent<FishBehaviour>().areWeHavingSex = false;
+            MyWaifu = null;
+            areWeHavingSex = false;
+            weAreMating = false;
+        }
+        
+        ourAquarium = null;
+        areWeInAqarium = false;
+
+    }
+
+
     }

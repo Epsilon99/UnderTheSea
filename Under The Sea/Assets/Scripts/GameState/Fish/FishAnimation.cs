@@ -5,6 +5,18 @@ public class FishAnimation : MonoBehaviour {
     
     private Animator anim;
 
+    public float currentAnimtionSpeed;
+
+    public float CurrentRuntimeEating;
+    public float CurrentRuntimeIdle1;
+    public float CurrentRuntimeIdle2;
+    public float CurrentRuntimeIdle3;
+    public float CurrentRuntimeParring;
+    public float CurrentRuntimePickup;
+    public float CurrentRuntimeSwimming;
+    public float CurrentRuntimeTurnL;
+    public float CurrentRuntimeTurnR;
+
     public float RuntimeEating;
     public float RuntimeIdle1;
     public float RuntimeIdle2;
@@ -15,17 +27,33 @@ public class FishAnimation : MonoBehaviour {
     public float RuntimeTurnL;
     public float RuntimeTurnR;
 
+
+
     public GameObject MyParrent;
 
 	// Use this for initialization
 	void Start () {
         anim = GetComponent<Animator>();
+        currentAnimtionSpeed = anim.speed;
+        SetAllAnimationSpeeds();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	    
 	}
+
+    public void SetAllAnimationSpeeds() {
+        CurrentRuntimeEating = RuntimeEating * currentAnimtionSpeed;
+        CurrentRuntimeIdle1 = RuntimeIdle1 * currentAnimtionSpeed;
+        CurrentRuntimeIdle2 = RuntimeIdle2 * currentAnimtionSpeed;
+        CurrentRuntimeIdle3 = RuntimeIdle3 * currentAnimtionSpeed;
+        CurrentRuntimeParring = RuntimeParring * currentAnimtionSpeed;
+        CurrentRuntimePickup = RuntimePickup * currentAnimtionSpeed;
+        CurrentRuntimeSwimming = RuntimeSwimming * currentAnimtionSpeed;
+        CurrentRuntimeTurnL = RuntimeTurnL * currentAnimtionSpeed;
+        CurrentRuntimeTurnR = RuntimeTurnR * currentAnimtionSpeed;
+    }
 
     public void Swimming(bool start) {
         if (start)
@@ -69,11 +97,11 @@ public class FishAnimation : MonoBehaviour {
         
         if (left) {
             anim.SetBool("TurningLeft",true);
-            StartCoroutine(RotateMe(Vector3.up * (transform.localEulerAngles.y-(-90))*-1,RuntimeTurnL));
+            StartCoroutine(RotateMe(Vector3.up * (transform.localEulerAngles.y - (-90)) * -1, CurrentRuntimeTurnL));
         }
         if (!left) {
             anim.SetBool("TurningRight", true);
-            StartCoroutine(RotateMe(Vector3.up * (transform.localEulerAngles.y-90)*-1, RuntimeTurnR));
+            StartCoroutine(RotateMe(Vector3.up * (transform.localEulerAngles.y - 90) * -1, CurrentRuntimeTurnR));
         }
     }
 
@@ -109,7 +137,7 @@ public class FishAnimation : MonoBehaviour {
             yield return null;
         }
         ResetAllVariables(true);
-        yield return new WaitForSeconds(RuntimeTurnL/3);
+        yield return new WaitForSeconds(CurrentRuntimeTurnL / 3);
         //MyParrent.GetComponent<BoxCollider>().enabled = true;
     }
 

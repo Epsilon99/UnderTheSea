@@ -8,6 +8,8 @@ public class FishPlayScript : MonoBehaviour {
     public Texture2D PlayCursor2;
     public Texture2D PlayCursor3;
     public Texture2D PlayCursor4;
+    private Texture2D previousCursor;
+
     public float secondsBetweenFrames;
 
     private GameObject PlayerStatGO;
@@ -17,6 +19,9 @@ public class FishPlayScript : MonoBehaviour {
     public float hoverTime;
     public int moneys;
     private float timer;
+    private int MaxMoneyCount = 5;
+    private int MoneyTimesCounter;
+    private float MoneyRefreshTimer = 60;
 
     private bool wasCounterSet = false;
     private bool areWePlayingAnimation = false;
@@ -32,22 +37,26 @@ public class FishPlayScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	    
+        MoneyTimesCounter = MaxMoneyCount;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (!shouldWePlayAnimation && timer <= Time.time && wasCounterSet == true)
         {
-            Debug.Log("start playing");
-            shouldWePlayAnimation = true;
             getMoney = true;
             timer = Time.time + hoverTime;
+            shouldWePlayAnimation = true;
         }
 
         if (getMoney && timer <= Time.time && gameObject.GetComponent<FishBehaviour>().areWeInAqarium != false)
         {
-            PlayerStatGO.GetComponent<PlayerStats>().Currency += moneys;
+            if (MoneyTimesCounter > 0)
+            {
+                PlayerStatGO.GetComponent<PlayerStats>().Currency += moneys;
+                MoneyTimesCounter -= 1;
+            }
+            gameObject.GetComponent<FishStats>().ChangeCurrentHappiness(Random.RandomRange(0,0.3f));
             timer = Time.time + hoverTime;
         }
 
@@ -56,12 +65,12 @@ public class FishPlayScript : MonoBehaviour {
             StartCoroutine(PlayAnimation());
         }
 
-
 	}
 
     void OnMouseEnter() {
         if (!wasCounterSet)
         {
+            previousCursor = CursorHandler.GetComponent<CursorScript>().currentCursor;
             timer = Time.time + timeBeforePlay;
             wasCounterSet = true;
         }
@@ -70,10 +79,21 @@ public class FishPlayScript : MonoBehaviour {
 
     void OnMouseExit() {
         getMoney = false;
-        CursorHandler.GetComponent<CursorScript>().ChangeTheCurrentCursor(PlayCursor1);
+        CursorHandler.GetComponent<CursorScript>().ChangeTheCurrentCursor(previousCursor);
         shouldWePlayAnimation = false;
         areWePlayingAnimation = false;
         wasCounterSet = false;
+
+        if (MoneyTimesCounter < MaxMoneyCount)
+            StartCoroutine(RefreshOurMoney());
+    }
+
+    private IEnumerator RefreshOurMoney() {
+        yield return new WaitForSeconds(MoneyRefreshTimer);
+        MoneyTimesCounter += 1;
+
+        if(MoneyTimesCounter < MaxMoneyCount)
+            StartCoroutine(RefreshOurMoney());
     }
 
     private IEnumerator PlayAnimation() {

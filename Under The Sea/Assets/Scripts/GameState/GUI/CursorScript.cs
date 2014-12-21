@@ -5,6 +5,7 @@ public class CursorScript : MonoBehaviour
 {
 
     public Texture2D StandardCursor;
+    public Texture2D currentCursor;
     public Camera MainCamera;
     public GameObject GameHandlerGO;
 
@@ -132,8 +133,17 @@ public class CursorScript : MonoBehaviour
 
             else if (!isFishLifted && areFishSelected)
             {
-                gameObject.GetComponent<GUIScript>().UnselectFish();
-                selectedFishGO.GetComponent<FishBehaviour>().OurSelectParticle.active = false;
+                if (selectedFishGO != null)
+                {
+                    gameObject.GetComponent<GUIScript>().UnselectFish();
+                    selectedFishGO.GetComponent<FishBehaviour>().OurSelectParticle.active = false;
+                    areFishSelected = false;
+                }
+            }
+
+            if (areFishSelected && selectedFishGO == null)
+            {
+                isFishLifted = false;
                 areFishSelected = false;
             }
         }
@@ -261,5 +271,6 @@ public class CursorScript : MonoBehaviour
     {
         yield return new WaitForSeconds(excecutionTime);
         Cursor.SetCursor(newCursor, cursorHotspot, cursorMode);
+        currentCursor = newCursor;
     }
 }

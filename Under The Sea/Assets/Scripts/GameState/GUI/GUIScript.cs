@@ -12,6 +12,10 @@ public class GUIScript : MonoBehaviour
     public GameObject NamePlate;
     public GameObject AgePlate;
     public GameObject TypePlate;
+    public GameObject HungerPlate;
+    public GameObject HappinesPlate;
+
+    private bool isFishSelected;
 
 	// Use this for initialization
 	void Start () {
@@ -20,7 +24,12 @@ public class GUIScript : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update () {
-	
+        if (areFishSelected && selectedFish != null)
+        {
+            AgePlate.GetComponent<TextMesh>().text = (selectedFish.GetComponent<FishStats>().currentAge.ToString());
+            HappinesPlate.GetComponent<TextMesh>().text = (int)selectedFish.GetComponent<FishStats>().CurHappiness + "%";
+            HungerPlate.GetComponent<TextMesh>().text = (int)selectedFish.GetComponent<FishStats>().CurStomach + "/" + selectedFish.GetComponent<FishStats>().RaceStomachSize;
+        }
 	}
 
     public void SelectFish(GameObject FishToSelect) {
@@ -44,15 +53,19 @@ public class GUIScript : MonoBehaviour
 
     public void UnselectFish() {
         if (areFishSelected) {
+            SelecPlate.GetComponent<SelectPlateScript>().DeselectFishNow();
             SelecPlate.active = false;
             areFishSelected = false;
         }
     }
 
     void changeSelectMenu(bool shouldWeEnable){
-        NamePlate.GetComponent<TextMesh>().text = ("Name: " + selectedFish.GetComponent<FishStats>().Name);
-        AgePlate.GetComponent<TextMesh>().text = ("Age: " + selectedFish.GetComponent<FishStats>().CurAge.ToString());
-        TypePlate.GetComponent<TextMesh>().text = ("Type: " + selectedFish.GetComponent<FishStats>().type);
+        SelecPlate.GetComponent<SelectPlateScript>().SelectFishNow(selectedFish);
+        NamePlate.GetComponent<TextMesh>().text = (selectedFish.GetComponent<FishStats>().Name);
+        AgePlate.GetComponent<TextMesh>().text = (selectedFish.GetComponent<FishStats>().currentAge.ToString());
+        TypePlate.GetComponent<TextMesh>().text = (selectedFish.GetComponent<FishStats>().type);
+        HappinesPlate.GetComponent<TextMesh>().text = (int)selectedFish.GetComponent<FishStats>().CurHappiness + "%";
+        HungerPlate.GetComponent<TextMesh>().text = (int)selectedFish.GetComponent<FishStats>().CurStomach + "/" + selectedFish.GetComponent<FishStats>().RaceStomachSize;
         if (shouldWeEnable) {
             SelecPlate.active = true;
             NamePlate.active = true;

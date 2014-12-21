@@ -4,8 +4,12 @@ using System.Collections;
 public class FoodScript : MonoBehaviour
 {
     public float Lifetime;
-    public float FeeddValue;
     public float Speed;
+    public float minFoodValue;
+    public float maxFoodValue;
+    public float minHappinessValue;
+    public float maxHappinessValue;
+    
     public GameObject myGraphicGO;
 
     private bool shallISink;
@@ -58,7 +62,9 @@ public class FoodScript : MonoBehaviour
     {
         if (other.collider.tag == "Fish")
         {
-            other.gameObject.GetComponent<FishBehaviour>().StartEatingNow();
+
+            other.gameObject.GetComponent<FishStats>().ChangeCurrentHappiness(Random.RandomRange(minHappinessValue, maxHappinessValue));
+            other.gameObject.GetComponent<FishBehaviour>().StartEatingNow(Random.RandomRange(minFoodValue,maxFoodValue));
             DestroyOurself();
         }
     }
